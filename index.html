@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>A Real Example</title>
+
+    <link rel = "css/webglbook.css"/>
+
+    <script src = "js/three.min.js"></script>
+    <script src="js/RequestAnimationFrame.js"></script>
+
+    <script>
+
+        var renderer = null,
+            scene = null,
+            camera = null,
+            cube = null,
+            animating = false;
+
+
+        function onLoad(){
+
+            //Get the container
+            var container = document.getElementById("container");
+
+            //Get the Three.js renderer, add it to div
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(container.offsetWidth,container.offsetHeight);
+            container.appendChild(renderer.domElement);
+
+            //Create a new Three.js scene
+            scene = new THREE.Scene();
+
+            //Create a camera and add it to the scene
+            camera = new THREE.PerspectiveCamera(45, container.offsetWidth/container.offsetHeight, 1, 4000);
+            camera.position.set(0, 0, 3);
+            scene.add(camera);
+
+
+
+            //Create a diractional light to show off the object
+            var light =  new THREE.DirectionalLight(0xffffff, 1.5);
+            light.position.set(0,0,1);
+            scene.add(light);
+
+            //Create a shaded, texture-mapped cube and add it to the scene
+
+            //Create the texture map
+             //var mapUrl = "images/molumen_small_funny_angry_monster.jpg"
+            var mapUrl = "images/em.jpeg";
+            var textureLoader = new THREE.TextureLoader();
+            var map = textureLoader.load(mapUrl );
+
+
+            //Create a Phong material to show shading
+            var material = new THREE.MeshPhongMaterial({map: map});
+
+
+            //Create the cube geometry
+            var geometry = new THREE.CubeGeometry(1,1,1);
+
+            //Put the geometry and material together into a mesh
+            cube = new THREE.Mesh(geometry, material);
+
+            //Turn it toward the scene!
+            cube.rotation.x = Math.PI / 5;
+            cube.rotation.y = Math.PI / 5;
+
+            //Add the cube to the scene
+            scene.add(cube);
+
+
+
+            addMouseHandler();
+
+            run();
+
+        }
+
+
+        function run(){
+            //render the scene
+            renderer.render(scene, camera);
+
+            //Spin the sube for next frame
+            if(animating){
+                cube.rotation.y -= 0.01;
+            }
+
+            //Ask for another frame
+            requestAnimationFrame(run);
+        }
+
+
+        function addMouseHandler(){
+            var dom = renderer.domElement;
+            dom.addEventListener('mouseup', onMouseUp, false);
+        }
+
+        function onMouseUp(event){
+            event.preventDefault();
+            animating = !animating;
+        }
+
+    </script>
+</head>
+
+
+<body onload="onLoad();" style="">
+    <h1>Rotating Cube</h1>
+    <div id = "container"
+         style="width:95%;
+         height:80%;
+         position: absolute;">
+    </div>
+
+    <div id = "prompt"
+         style = "width: 95%;
+         height: 6%;
+         bottom: 0;
+         position: absolute;">
+        Click to animate the cube
+    </div>
+
+</body>
+</html>
